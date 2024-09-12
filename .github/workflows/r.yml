@@ -1,0 +1,71 @@
+# Import data
+
+#Histograms
+#Plot the histograms together (If you do not want to plot them together, then do not run this.)
+par(mfrow = c(2,2))
+#(i) Price
+hist(data$price, probability = T, xlab = "Price", main = "Histogram of house prices")
+# Estimate density
+dens <- density(data$price)
+# Add normal curve
+curve(dnorm(x, mean = mean(data$price), sd = sd(data$price)), add = TRUE, col = "red", lwd = 2)
+# Add legend at topright position
+legend("topright", legend = c("Histogram", "Normal Curve"), fill = c("gray", "red"))
+#Add a box around the plot
+box(ltw=1)
+
+#(ii) No. of bedrooms
+#Histogram with y axis adjusted
+hist(data$bedrooms, probability = T, xlab = "Number of bedrooms", main = "Histogram of number of bedrooms", ylim = c(0,0.5))
+# Estimate density
+dens <- density(data$bedrooms)
+# Add normal curve
+curve(dnorm(x, mean = mean(data$bedrooms), sd = sd(data$bedrooms)), add = TRUE, col = "green", lwd = 2)
+# Add legend at topright position
+legend("topright", legend = c("Histogram", "Normal Curve"), fill = c("gray", "green"))
+#Add a box around the plot
+box(ltw=1)
+
+#(iii) 
+hist(data$bathrooms, probability = T, xlab = "Number of bathrooms", main = "Histogram of number of bathrooms")
+# Estimate density
+dens <- density(data$bathrooms)
+# Add normal curve
+curve(dnorm(x, mean = mean(data$bathrooms), sd = sd(data$bathrooms)), add = TRUE, col = "blue", lwd = 2)
+# Add legend at topright position
+legend("topright", legend = c("Histogram", "Normal Curve"), fill = c("gray", "blue"))
+#Add a box around the plot
+box(ltw=1)
+
+#Reset the plot environment
+dev.off()
+
+
+#Scatter graph
+
+# Calculate confidence intervals
+model <- lm(data$bedrooms ~ data$price, data=data)
+summary(model)
+
+# Predictions with confidence intervals
+predictions <- predict(model, interval = "confidence")
+
+# Combine predictions with original data
+data_with_pred <- cbind(data, predictions)
+View(data_with_pred)
+# Create the plot
+ggplot(data_with_pred, aes(x = data$price, y = data$bedrooms)) +
+  geom_point(size = 0.5) +
+  geom_smooth(method = "lm", se = FALSE, color = "red", lty = 2, linewidth = 0.5) +
+  #geom_line(aes(y = fit), color = "red") +
+  geom_ribbon(aes(ymin = lwr, ymax = upr), alpha = 0.4, fill = "green") +
+  labs(title = "Scatterplot of Bedrooms vs Price",
+       x = "Price",
+       y = "Number of Bedrooms") +
+  theme_bw()
+
+ ###Age of house in 2024#####
+ home_data$age <- 2024 - home_data$yr_built
+ home_data$condition <- as.factor(home_data$condition)
+ lm_model <- lm(log(price) ~ bedrooms + bathrooms + condition + floors + age + I(age^2), data = home_data)
+ summary(lm_model)
